@@ -20,6 +20,7 @@ struct LoginView: View {
                 
                 VStack (spacing: 10){
                     
+                    // Sign In with FaceID Button
                     Button(action: handleBiometricAuth) {
                         ZStack {
                             Color.black
@@ -34,7 +35,7 @@ struct LoginView: View {
                     .cornerRadius(10.0)
                     .scaledToFill()
                     
-                    
+                    // Sign In with Apple Button
                     SignInWithAppleButton(.signIn) { request in
                         // Create a request for Sign In
                         request.requestedScopes = [.fullName, .email]
@@ -61,6 +62,8 @@ struct LoginView: View {
     
     private func handleSuccessfulLogin(authorization: ASAuthorization) {
         print("Successful login with \(authorization)")
+        self.isLoggedIn = true
+        
         if let userDetails = authorization.credential as? ASAuthorizationAppleIDCredential {
                     
                     if userDetails.authorizedScopes.contains(.fullName) {
@@ -74,8 +77,23 @@ struct LoginView: View {
     }
     
     private func handleLoginError(error: Error) {
-            print("Login Error: \(error.localizedDescription)")
-        }
+        showLoginFailedFailed()
+        print("Login Error: \(error.localizedDescription)")
+    }
+    
+    private func showLoginFailedFailed() {
+        // Create a UIAlertView Controller
+        let informationAlert = UIAlertController(title: "Sign in with Apple Failed" , message: "The provided Apple Account credentials are invalid", preferredStyle: .alert)
+        
+        // Create an action for the Ok button
+        let okAction = UIAlertAction(title: "Ok", style: .default)
+        
+        // Add the actions to the Alert and present it
+        informationAlert.addAction(okAction)
+        
+        let viewController = UIApplication.shared.windows.first!.rootViewController!
+        viewController.present(informationAlert, animated: true, completion: nil)
+    }
     
     private func handleBiometricAuth() {
         print("Face ID")
